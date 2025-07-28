@@ -23,21 +23,25 @@ class BudgetSerializer(serializers.ModelSerializer):
         exclude = ['user']
 
 class IncomeSerializer(serializers.ModelSerializer):
+    person = PersonSerializer(read_only=True)
     class Meta:
         model = Income
         exclude = ['user']
 
 class ExpenseSerializer(serializers.ModelSerializer):
+    person = PersonSerializer(read_only=True)
     class Meta:
         model = Expense
         exclude = ['user']
 
 class DebtSerializer(serializers.ModelSerializer):
+    person = PersonSerializer(read_only=True)
     class Meta:
         model = Debt
         exclude = ['user']
 
 class CreditSerializer(serializers.ModelSerializer):
+    person = PersonSerializer(read_only=True)
     class Meta:
         model = Credit
         exclude = ['user']
