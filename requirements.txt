@@ -6,3 +6,5 @@ jdatetime==5.2.0
 persiantools==5.3.0
 python-dateutil==2.9.0
 djangorestframework-simplejwt==5.3.1
+Pillow==11.3.0
+drf-nested-routers==0.93.4

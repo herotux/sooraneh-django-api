@@ -13,6 +13,7 @@ router.register(r"expenses", views.ExpenseViewSet, basename='expense')
 router.register(r"debts", views.DebtViewSet, basename='debt')
 router.register(r"credits", views.CreditViewSet, basename='credit')
 router.register(r"installments", views.InstallmentViewSet, basename='installment')
+router.register(r"wallets", views.WalletViewSet, basename='wallet')
 
 urlpatterns = [
     path("", include(router.urls)),
