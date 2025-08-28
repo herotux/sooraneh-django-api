@@ -22,9 +22,18 @@ class BudgetSerializer(serializers.ModelSerializer):
         model = Budget
         exclude = ['user']
 
+
+class WalletSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Wallet
+        exclude = ['user']
+
+
 class IncomeSerializer(serializers.ModelSerializer):
     person = PersonSerializer(read_only=True)
     person_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
+    wallet = WalletSerializer(read_only=True)
+    wallet_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
     class Meta:
         model = Income
         exclude = ['user']
@@ -32,6 +41,8 @@ class IncomeSerializer(serializers.ModelSerializer):
 class ExpenseSerializer(serializers.ModelSerializer):
     person = PersonSerializer(read_only=True)
     person_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
+    wallet = WalletSerializer(read_only=True)
+    wallet_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
     class Meta:
         model = Expense
         exclude = ['user']

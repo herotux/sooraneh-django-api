@@ -28,6 +28,8 @@ INSTALLED_APPS = [
     # Local apps
     "users.apps.UsersConfig",
     "finances.apps.FinancesConfig",
+    "core.apps.CoreConfig",
+    "messaging.apps.MessagingConfig",
 ]
 
 MIDDLEWARE = [
@@ -84,6 +86,9 @@ STATIC_URL = '/static/'
 
 # این خط رو اضافه کنید
 STATIC_ROOT = '/home/Freetux/sooraneh_django_api/staticfiles'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
