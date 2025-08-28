@@ -1,17 +1,25 @@
 from django.db import models
-from users.models import User
+from django.conf import settings
 
 class Person(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="persons")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="persons")
+    linked_user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='person_profile'
+    )
     first_name = models.CharField(max_length=60)
     last_name = models.CharField(max_length=60, blank=True, null=True)
     relation = models.CharField(max_length=60)
+    avatar = models.ImageField(upload_to='persons/', null=True, blank=True)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name or ''}"
 
 class Category(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="categories")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="categories")
     name = models.CharField(max_length=60)
     parent = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True)
     is_income = models.BooleanField(default=False)
@@ -20,7 +28,7 @@ class Category(models.Model):
         return self.name
 
 class Tag(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tags")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="tags")
     name = models.CharField(max_length=60)
     description = models.CharField(max_length=100, blank=True, null=True)
 
@@ -28,7 +36,7 @@ class Tag(models.Model):
         return self.name
 
 class Budget(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     monthly_budget = models.IntegerField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True)
 
@@ -37,7 +45,7 @@ class Budget(models.Model):
 
 
 class Wallet(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="wallets")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="wallets")
     name = models.CharField(max_length=60)
     balance = models.IntegerField(default=0)
 
@@ -46,7 +54,7 @@ class Wallet(models.Model):
 
 
 class Income(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     wallet = models.ForeignKey(Wallet, on_delete=models.SET_NULL, null=True, blank=True)
     person = models.ForeignKey(Person, on_delete=models.SET_NULL, null=True, blank=True)
     tag = models.ForeignKey(Tag, on_delete=models.SET_NULL, null=True, blank=True)
@@ -59,7 +67,7 @@ class Income(models.Model):
         return f"{self.text} - {self.amount}"
 
 class Expense(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     wallet = models.ForeignKey(Wallet, on_delete=models.SET_NULL, null=True, blank=True)
     person = models.ForeignKey(Person, on_delete=models.SET_NULL, null=True, blank=True)
     tag = models.ForeignKey(Tag, on_delete=models.SET_NULL, null=True, blank=True)
@@ -73,7 +81,7 @@ class Expense(models.Model):
         return f"{self.text} - {self.amount}"
 
 class Debt(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     person = models.ForeignKey(Person, on_delete=models.SET_NULL, null=True, blank=True)
     amount = models.IntegerField()
     text = models.CharField(max_length=30)
@@ -84,7 +92,7 @@ class Debt(models.Model):
         return f"Debt: {self.amount}"
 
 class Credit(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     person = models.ForeignKey(Person, on_delete=models.SET_NULL, null=True, blank=True)
     amount = models.IntegerField()
     text = models.CharField(max_length=30)
@@ -95,7 +103,7 @@ class Credit(models.Model):
         return f"Credit: {self.amount}"
 
 class Installment(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     person = models.ForeignKey(Person, on_delete=models.SET_NULL, null=True, blank=True)
     amount = models.IntegerField()
     text = models.CharField(max_length=30)

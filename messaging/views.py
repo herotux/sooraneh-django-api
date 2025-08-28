@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 from .models import Friendship, Message
+from finances.models import Person
 from .serializers import FriendshipSerializer, SimpleUserSerializer, MessageSerializer
 
 User = get_user_model()
@@ -134,6 +135,7 @@ class FriendshipViewSet(viewsets.ViewSet):
     def accept(self, request, pk=None):
         """
         Accept a friend request with the given pk.
+        This also creates corresponding Person objects for both users.
         """
         try:
             friend_request = Friendship.objects.get(pk=pk, to_user=request.user, status='PENDING')
@@ -142,8 +144,43 @@ class FriendshipViewSet(viewsets.ViewSet):
 
         friend_request.status = 'ACCEPTED'
         friend_request.save()
+
+        # Create Person objects for each user in the other's contacts
+        from_user = friend_request.from_user
+        to_user = friend_request.to_user
+
+        # Create a Person for from_user in to_user's contacts
+        Person.objects.get_or_create(
+            user=to_user,
+            linked_user=from_user,
+            defaults={'first_name': from_user.first_name, 'last_name': from_user.last_name, 'relation': 'Friend'}
+        )
+        # Create a Person for to_user in from_user's contacts
+        Person.objects.get_or_create(
+            user=from_user,
+            linked_user=to_user,
+            defaults={'first_name': to_user.first_name, 'last_name': to_user.last_name, 'relation': 'Friend'}
+        )
+
         serializer = FriendshipSerializer(friend_request)
         return Response(serializer.data)
+
+    @action(detail=True, methods=['post'])
+    def unfriend(self, request, pk=None):
+        """
+        Remove a friend connection. The pk is the user ID of the friend.
+        """
+        try:
+            friend_to_remove = User.objects.get(pk=pk)
+            friendship = Friendship.objects.get(
+                (Q(from_user=request.user, to_user=friend_to_remove) |
+                 Q(from_user=friend_to_remove, to_user=request.user)),
+                status='ACCEPTED'
+            )
+            friendship.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except (User.DoesNotExist, Friendship.DoesNotExist):
+            return Response({"error": "Friendship not found."}, status=status.HTTP_404_NOT_FOUND)
 
     @action(detail=True, methods=['post'])
     def reject(self, request, pk=None):
