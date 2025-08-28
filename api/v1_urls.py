@@ -5,5 +5,6 @@ urlpatterns = [
     path("", include("finances.urls")),
     path("", include("core.urls")),
     path("", include("messaging.urls")),
+    path("", include("groups.urls")),
     path("users/me/", ProfileView.as_view(), name="profile"),
 ]

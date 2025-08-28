@@ -40,6 +40,13 @@
 - `GET /api/v1/messages/{user_id}/history/` — مشاهده تاریخچه پیام با یک کاربر
 - `POST /api/v1/messages/` — ارسال پیام (body: `{"recipient_id": id, "content": "..."}`)
 
+## 👥 گروه‌ها (دونگی) (جدید)
+- `GET/POST /api/v1/groups/` — مشاهده و ایجاد گروه‌ها
+- `POST /api/v1/groups/{id}/add-member/` — افزودن عضو به گروه (body: `{"user_id": id}`)
+- `POST /api/v1/groups/{id}/remove-member/` — حذف عضو از گروه (body: `{"user_id": id}`)
+- `GET/POST /api/v1/groups/{id}/expenses/` — مشاهده و ثبت هزینه در گروه
+- `GET /api/v1/groups/{id}/summary/` — مشاهده خلاصه وضعیت مالی و تسویه حساب‌های پیشنهادی
+
 ## 📊 Swagger
 - `http://localhost:8000/swagger/`
 - `http://localhost:8000/redoc/`
