@@ -31,6 +31,9 @@ INSTALLED_APPS = [
     "core.apps.CoreConfig",
     "messaging.apps.MessagingConfig",
     "groups.apps.GroupsConfig",
+    "buildings.apps.BuildingsConfig",
+    "challenges.apps.ChallengesConfig",
+    "funds.apps.FundsConfig",
 ]
 
 MIDDLEWARE = [

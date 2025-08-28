@@ -177,6 +177,18 @@ class FriendshipViewSet(viewsets.ViewSet):
                  Q(from_user=friend_to_remove, to_user=request.user)),
                 status='ACCEPTED'
             )
+
+            # Disassociate the Person objects
+            person1 = Person.objects.filter(user=request.user, linked_user=friend_to_remove).first()
+            if person1:
+                person1.linked_user = None
+                person1.save()
+
+            person2 = Person.objects.filter(user=friend_to_remove, linked_user=request.user).first()
+            if person2:
+                person2.linked_user = None
+                person2.save()
+
             friendship.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except (User.DoesNotExist, Friendship.DoesNotExist):

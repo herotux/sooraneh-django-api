@@ -53,9 +53,14 @@ class PasswordResetRequestView(generics.GenericAPIView):
         uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
         token = token_generator.make_token(user)
 
-        # In a real app, you'd email this link. Here, we'll print it.
+        # In a real application, you would send an email with the reset link.
+        # For this development version, we print the link to the console.
+        # An email service like SendGrid or AWS SES would be integrated here.
         reset_link = f"/password-reset-confirm/{uidb64}/{token}/"
-        print(f"Password reset link for {email}: {reset_link}")
+        print("--- PASSWORD RESET LINK (FOR DEVELOPMENT) ---")
+        print(f"User: {email}")
+        print(f"Link: {reset_link}")
+        print("---------------------------------------------")
 
         return Response(
             {"message": "If an account with that email exists, a password reset link has been sent."},
