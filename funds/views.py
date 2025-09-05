@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from .models import Fund, FundMembership, Contribution
 from .serializers import FundSerializer, ContributionSerializer, PayoutCreateSerializer
+from subscriptions.permissions import HasFeaturePermission
 
 User = get_user_model()
 
@@ -27,6 +28,11 @@ class FundViewSet(viewsets.ModelViewSet):
         """
         fund = serializer.save(creator=self.request.user)
         FundMembership.objects.create(fund=fund, user=self.request.user)
+
+    def get_permissions(self):
+        if self.action == 'create':
+            self.permission_classes = [permissions.IsAuthenticated, HasFeaturePermission.for_feature('can_create_funds')]
+        return super().get_permissions()
 
     @action(detail=True, methods=['post'])
     def invite(self, request, pk=None):

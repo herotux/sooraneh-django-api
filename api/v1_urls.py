@@ -9,5 +9,6 @@ urlpatterns = [
     path("", include("buildings.urls")),
     path("", include("challenges.urls")),
     path("", include("funds.urls")),
+    path("subscriptions/", include("subscriptions.urls")),
     path("users/me/", ProfileView.as_view(), name="profile"),
 ]

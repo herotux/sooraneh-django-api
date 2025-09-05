@@ -9,6 +9,7 @@ from .serializers import (
     BuildingExpenseSerializer,
     MaintenanceFeeSerializer
 )
+from subscriptions.permissions import HasFeaturePermission
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
@@ -41,9 +42,12 @@ class BuildingViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         """
-        فقط مدیر می‌تواند ساختمان را ویرایش یا حذف کند.
+        - Only the manager can edit or delete.
+        - Only users with the 'can_manage_buildings' plan can create.
         """
-        if self.action in ['update', 'partial_update', 'destroy']:
+        if self.action == 'create':
+            self.permission_classes = [permissions.IsAuthenticated, HasFeaturePermission.for_feature('can_manage_buildings')]
+        elif self.action in ['update', 'partial_update', 'destroy']:
             self.permission_classes = [IsManagerPermission]
         return super().get_permissions()
 

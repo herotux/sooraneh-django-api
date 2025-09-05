@@ -7,6 +7,7 @@ from collections import defaultdict
 from decimal import Decimal
 from .models import Group, GroupExpense, Split
 from .serializers import GroupSerializer, GroupExpenseSerializer
+from subscriptions.permissions import HasFeaturePermission
 from django.shortcuts import get_object_or_404
 
 User = get_user_model()
@@ -24,6 +25,11 @@ class GroupViewSet(viewsets.ModelViewSet):
         # Set the owner and add them as the first member
         group = serializer.save(owner=self.request.user)
         group.members.add(self.request.user)
+
+    def get_permissions(self):
+        if self.action == 'create':
+            self.permission_classes = [permissions.IsAuthenticated, HasFeaturePermission.for_feature('can_create_groups')]
+        return super().get_permissions()
 
     @action(detail=True, methods=['post'], url_path='add-member')
     def add_member(self, request, pk=None):

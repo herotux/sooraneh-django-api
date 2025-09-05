@@ -4,9 +4,11 @@ from .models import User
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
+    initials = serializers.CharField(source='get_initials', read_only=True)
+
     class Meta:
         model = User
-        fields = ("id", "username", "password", "first_name", "last_name", "email")
+        fields = ("id", "username", "password", "first_name", "last_name", "email", "avatar", "initials")
 
     def create(self, validated_data):
         user = User.objects.create_user(
@@ -25,15 +27,17 @@ class SimpleUserSerializer(serializers.ModelSerializer):
     A simple serializer for User model to avoid exposing sensitive data.
     Used for nested representations.
     """
+    initials = serializers.CharField(source='get_initials', read_only=True)
+
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'last_name']
+        fields = ['id', 'username', 'first_name', 'last_name', 'avatar', 'initials']
 
 
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'avatar']
+        fields = ['first_name', 'last_name', 'avatar', 'birth_date', 'gender', 'occupation']
 
 
 class PasswordResetRequestSerializer(serializers.Serializer):
