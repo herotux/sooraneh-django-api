@@ -8,9 +8,18 @@ class PersonSerializer(serializers.ModelSerializer):
         exclude = ['user']
 
 class CategorySerializer(serializers.ModelSerializer):
+    children = serializers.SerializerMethodField()
+    parent_id = serializers.IntegerField(write_only=True, required=False, allow_null=True, source='parent')
+
     class Meta:
         model = Category
-        exclude = ['user']
+        fields = ['id', 'name', 'parent_id', 'is_income', 'children']
+
+    def get_children(self, obj):
+        # Recursively serialize children
+        children = Category.objects.filter(parent=obj)
+        serializer = CategorySerializer(children, many=True)
+        return serializer.data
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:

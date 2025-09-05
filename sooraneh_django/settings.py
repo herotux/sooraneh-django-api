@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "buildings.apps.BuildingsConfig",
     "challenges.apps.ChallengesConfig",
     "funds.apps.FundsConfig",
+    "subscriptions.apps.SubscriptionsConfig",
 ]
 
 MIDDLEWARE = [
@@ -117,3 +118,6 @@ SIMPLE_JWT = {
 
 # CORS
 CORS_ALLOW_ALL_ORIGINS = True
+
+# Zarinpal
+ZARINPAL_MERCHANT_ID = os.getenv("ZARINPAL_MERCHANT_ID", "YOUR_MERCHANT_ID_HERE")

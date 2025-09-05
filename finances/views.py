@@ -12,6 +12,7 @@ from .models import (
     Installment,
     Wallet,
 )
+from rest_framework.exceptions import PermissionDenied
 from .serializers import (
     PersonSerializer,
     CategorySerializer,
@@ -43,7 +44,11 @@ class CategoryViewSet(viewsets.ModelViewSet):
     queryset = None
 
     def get_queryset(self):
-        return Category.objects.filter(user=self.request.user)
+        # By default, only show top-level categories in the list view
+        queryset = Category.objects.filter(user=self.request.user)
+        if self.action == 'list':
+            return queryset.filter(parent__isnull=True)
+        return queryset
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -228,6 +233,8 @@ class InstallmentViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
 
+from subscriptions.models import Subscription
+
 class WalletViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = WalletSerializer
@@ -237,4 +244,19 @@ class WalletViewSet(viewsets.ModelViewSet):
         return Wallet.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        user = self.request.user
+        try:
+            subscription = user.subscription
+            if not subscription.is_active:
+                raise PermissionDenied("Your subscription is not active.")
+
+            max_wallets = subscription.plan.max_wallets
+            current_wallets = Wallet.objects.filter(user=user).count()
+
+            if current_wallets >= max_wallets:
+                raise PermissionDenied(f"Your plan allows a maximum of {max_wallets} wallets.")
+
+        except Subscription.DoesNotExist:
+            raise PermissionDenied("You do not have an active subscription.")
+
+        serializer.save(user=user)

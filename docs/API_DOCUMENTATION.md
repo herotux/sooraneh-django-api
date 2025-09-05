@@ -66,6 +66,11 @@
 - `POST /api/v1/funds/{id}/contribute/` — ثبت پرداخت سهم ماهانه
 - `POST /api/v1/funds/{id}/log-payout/` — ثبت دریافت‌کننده قرعه ماه (توسط مدیر)
 
+## 💳 اشتراک و پرداخت (جدید)
+- `POST /api/v1/subscriptions/request-payment/` — شروع فرآیند پرداخت برای یک پلن از طریق زرین‌پال (body: `{"plan_id": id}`)
+- `GET /api/v1/subscriptions/verify-payment/` — نقطه بازگشت از درگاه پرداخت برای تأیید نهایی
+- **توجه**: برای پرداخت آفلاین (کارت به کارت)، مدیر سیستم می‌تواند از طریق پنل ادمین جنگو، اشتراک کاربر را به صورت دستی ایجاد یا تمدید کند.
+
 ## 📊 Swagger
 - `http://localhost:8000/swagger/`
 - `http://localhost:8000/redoc/`
